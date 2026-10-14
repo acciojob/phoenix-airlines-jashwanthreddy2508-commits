@@ -11,6 +11,12 @@
   text-align: left;
   box-sizing: border-box;
 }
+.flight-trip-types legend {
+  margin-bottom: 8px;
+  color: #52627a;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
 
 .flight-search-heading {
   margin-bottom: 30px;
