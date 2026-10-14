@@ -49,6 +49,30 @@
   border-bottom: 1px solid #edf0f4;
 }
 
+.flight-booking-flight {
+  margin-bottom: 26px;
+  padding: 16px 18px;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background: #f5f9ff;
+  color: #40516a;
+  font-size: 0.88rem;
+}
+
+.flight-booking-flight h2 {
+  margin: 0 0 8px;
+  color: #203550;
+  font-size: 0.95rem;
+}
+
+.flight-booking-flight p + p {
+  margin-top: 5px;
+}
+
+.flight-booking-flight strong {
+  color: #203550;
+}
+
 .flight-booking-step {
   display: grid;
   width: 42px;
@@ -112,14 +136,18 @@
 
 .flight-booking-submit {
   display: flex;
+  width: 100%;
   min-height: 52px;
   align-items: center;
   justify-content: center;
   gap: 10px;
   margin-top: 26px;
   border-radius: 11px;
+  border: 0;
   background: #245eaa;
   color: #fff;
+  cursor: pointer;
+  font-family: inherit;
   font-size: 0.92rem;
   font-weight: 750;
   text-decoration: none;
@@ -143,6 +171,13 @@
   color: #8290a2;
   font-size: 0.77rem;
   text-align: center;
+}
+
+.flight-booking-error {
+  margin-top: 16px;
+  color: #b42318;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .flight-booking-secure span {

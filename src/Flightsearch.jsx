@@ -45,7 +45,10 @@ function Flightsearch() {
       return;
     }
 
-    if (inputs.departureDate < today || (inputs.returnDate && inputs.returnDate < inputs.departureDate)) {
+    if (
+      inputs.departureDate < today ||
+      (inputs.tripType === "roundtrip" && inputs.returnDate < inputs.departureDate)
+    ) {
       setError("Choose a departure date from today onward and a return date on or after departure.");
       return;
     }
@@ -200,7 +203,7 @@ function Flightsearch() {
                 <span>{flight.tripType === "roundtrip" ? "Round trip" : "One way"}</span>
                 <strong>${flight.price}</strong>
               </div>
-              <Link className="flight-book-button" to="/flightbooking">
+              <Link className="book-flight flight-book-button" to="/flightbooking" state={{ flight }}>
                 Book
               </Link>
             </article>
