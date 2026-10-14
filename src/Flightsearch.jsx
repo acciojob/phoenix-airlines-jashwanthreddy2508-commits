@@ -8,19 +8,45 @@ const demoFlights = [
   { airline: "Emirates", departure: "07:00 PM", arrival: "11:10 PM", price: 320 },
 ];
 
+const destinations = ["Mumbai", "Delhi", "Bangalore", "Chennai", "Dubai", "London", "New York", "Singapore"];
+
+function getToday() {
+  const today = new Date();
+  const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60_000);
+  return localDate.toISOString().slice(0, 10);
+}
+
 function Flightsearch() {
   const [search, setSearch] = useState([]);
   const [inputs, setInputs] = useState({
     source: "",
     destination: "",
     departureDate: "",
+    returnDate: "",
     tripType: "oneway",
   });
   const [error, setError] = useState("");
+  const today = getToday();
 
-  function handleSearch() {
-    if (!inputs.source || !inputs.destination || !inputs.departureDate) {
-      setError("Please select a source, destination, and departure date.");
+  function handleSearch(event) {
+    event.preventDefault();
+    if (
+      !inputs.source ||
+      !inputs.destination ||
+      !inputs.departureDate ||
+      (inputs.tripType === "roundtrip" && !inputs.returnDate)
+    ) {
+      setError("Please complete all required flight details.");
+      return;
+    }
+
+    if (inputs.source === inputs.destination) {
+      setError("Source and destination must be different.");
+      return;
+    }
+
+    if (inputs.departureDate < today || (inputs.returnDate && inputs.returnDate < inputs.departureDate)) {
+      setError("Choose a departure date from today onward and a return date on or after departure.");
       return;
     }
 
@@ -35,6 +61,7 @@ function Flightsearch() {
 
   function updateInput(field, value) {
     setInputs((currentInputs) => ({ ...currentInputs, [field]: value }));
+    setError("");
   }
 
   return (
@@ -45,8 +72,9 @@ function Flightsearch() {
         <p>Search routes and compare flight options for your trip.</p>
       </header>
 
-      <section className="flight-search-form" aria-label="Flight search">
-        <div className="flight-trip-types" aria-label="Trip type">
+      <form className="flight-search-form" aria-label="Flight search" onSubmit={handleSearch}>
+        <fieldset className="flight-trip-types">
+          <legend className="flight-trip-legend">Trip type</legend>
           <label className="flight-trip-option">
             <input
               type="radio"
@@ -67,21 +95,22 @@ function Flightsearch() {
             />
             Round trip
           </label>
-        </div>
+        </fieldset>
 
         <div className="flight-search-fields">
           <div className="flight-field">
             <label htmlFor="source">Source</label>
             <select
               id="source"
+              name="source"
+              required
               value={inputs.source}
               onChange={(event) => updateInput("source", event.target.value)}
             >
               <option value="">Select source</option>
-              <option value="Mumbai">Mumbai</option>
-              <option value="Delhi">Delhi</option>
-              <option value="Bangalore">Bangalore</option>
-              <option value="Chennai">Chennai</option>
+              {destinations.map((destination) => (
+                <option value={destination} key={destination}>{destination}</option>
+              ))}
             </select>
           </div>
 
@@ -89,14 +118,15 @@ function Flightsearch() {
             <label htmlFor="destination">Destination</label>
             <select
               id="destination"
+              name="destination"
+              required
               value={inputs.destination}
               onChange={(event) => updateInput("destination", event.target.value)}
             >
               <option value="">Select destination</option>
-              <option value="Dubai">Dubai</option>
-              <option value="London">London</option>
-              <option value="New York">New York</option>
-              <option value="Singapore">Singapore</option>
+              {destinations.map((destination) => (
+                <option value={destination} key={destination}>{destination}</option>
+              ))}
             </select>
           </div>
 
@@ -105,17 +135,35 @@ function Flightsearch() {
             <input
               type="date"
               id="departureDate"
+              name="departureDate"
+              min={today}
+              required
               value={inputs.departureDate}
               onChange={(event) => updateInput("departureDate", event.target.value)}
             />
           </div>
 
-          <button className="flight-search-button" type="button" onClick={handleSearch}>
+          {inputs.tripType === "roundtrip" && (
+            <div className="flight-field">
+              <label htmlFor="returnDate">Return Date</label>
+              <input
+                type="date"
+                id="returnDate"
+                name="returnDate"
+                min={inputs.departureDate || today}
+                required
+                value={inputs.returnDate}
+                onChange={(event) => updateInput("returnDate", event.target.value)}
+              />
+            </div>
+          )}
+
+          <button className="flight-search-button" type="submit">
             Search Flights
           </button>
         </div>
         {error && <p className="flight-search-error" role="alert">{error}</p>}
-      </section>
+      </form>
 
       {search.length > 0 && (
         <section className="flight-results" aria-live="polite">
@@ -126,6 +174,7 @@ function Flightsearch() {
                 {search[0].source} <span aria-hidden="true">→</span> {search[0].destination}
               </h2>
               <p>Departure date: {search[0].departureDate}</p>
+              {search[0].tripType === "roundtrip" && <p>Return date: {search[0].returnDate}</p>}
             </div>
             <span className="flight-result-count">{search.length} flights</span>
           </div>
