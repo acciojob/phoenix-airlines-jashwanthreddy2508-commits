@@ -22,8 +22,28 @@ function Flightbooking() {
       phone: passenger.phone.trim(),
     };
 
-    if (!details.name || !details.email || !details.phone) {
-      setError("Please enter your name, email address, and phone number.");
+    if (!flight) {
+      setError("Please choose a flight before continuing with your booking.");
+      return;
+    }
+
+    if (details.name.length < 2) {
+      setError("Please enter your full name (at least 2 characters).");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(details.email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    const phoneDigits = details.phone.replace(/\D/g, "");
+    if (
+      !/^\+?[0-9][0-9\s()-]*$/.test(details.phone) ||
+      phoneDigits.length < 7 ||
+      phoneDigits.length > 15
+    ) {
+      setError("Please enter a valid phone number with 7 to 15 digits.");
       return;
     }
 
@@ -55,7 +75,7 @@ function Flightbooking() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form noValidate onSubmit={handleSubmit}>
           <div className="flight-booking-fields">
             <label className="flight-booking-field" htmlFor="passenger-name">
               <span>Full name</span>
@@ -65,6 +85,7 @@ function Flightbooking() {
                 type="text"
                 required
                 minLength={2}
+                maxLength={100}
                 placeholder="Enter your full name"
                 autoComplete="name"
                 value={passenger.name}
@@ -78,6 +99,7 @@ function Flightbooking() {
                 name="email"
                 type="email"
                 required
+                maxLength={254}
                 placeholder="you@example.com"
                 autoComplete="email"
                 value={passenger.email}
@@ -91,8 +113,9 @@ function Flightbooking() {
                 name="phone"
                 type="tel"
                 required
-                pattern="[+0-9() -]{7,20}"
-                title="Enter a valid phone number."
+                maxLength={20}
+                pattern="\+?[0-9][0-9 ()-]*"
+                title="Enter a valid phone number with 7 to 15 digits."
                 placeholder="+1 555 123 4567"
                 autoComplete="tel"
                 value={passenger.phone}

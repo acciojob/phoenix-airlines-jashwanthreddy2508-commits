@@ -30,6 +30,8 @@ function Flightsearch() {
 
   function handleSearch(event) {
     event.preventDefault();
+    setSearch([]);
+
     if (
       !inputs.source ||
       !inputs.destination ||
@@ -64,6 +66,7 @@ function Flightsearch() {
 
   function updateInput(field, value) {
     setInputs((currentInputs) => ({ ...currentInputs, [field]: value }));
+    setSearch([]);
     setError("");
   }
 
